@@ -148,7 +148,7 @@ export const AllRoutes = () => {
           }
         />
 
-        <Route path="/paymentsuccess" element={<PaymentSuccess />} />
+        <Route path="/paymentsuccess" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
       </Routes>
 
       {/* admin routes ------------------------>*/}

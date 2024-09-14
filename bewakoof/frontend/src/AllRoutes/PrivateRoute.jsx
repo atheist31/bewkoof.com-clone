@@ -1,21 +1,18 @@
 
 
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation ,Navigate} from 'react-router-dom'
-import { getTokenFromCookies } from '../utils/token.utils'
+import { getTokenFromCookies, isTokenExpired } from '../utils/token.utils'
 import {useCustomToast} from '../Layout/useCustomToast'
 
 const PrivateRoute = ({children}) => {
   
   const showToast=useCustomToast();
     const token=getTokenFromCookies();
-  const isTokenExpire= isTokenExpired(token)
-
+    const isTokenExpire = isTokenExpired(token);
     const location=useLocation();
-    const {state}=location
     
-   if(!token){
+   if(isTokenExpire){
     showToast("Please Login First","error", 3000)
     return <Navigate to={"/user/login"} state={location.pathname} />
   }

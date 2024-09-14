@@ -3,7 +3,8 @@ const initialState = {
   isPaymentLoading:false,
   isPaymentSuccess:false,
   isPaymentError:false,
-  msg:""
+  msg:"",
+  responseObj:{}
 };
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -11,7 +12,7 @@ export const reducer = (state = initialState, { type, payload }) => {
     case types.PAYMENT_REQUEST:
       return { ...state, isPaymentLoading: true };
     case types.PAYMENT_SUCCESS:
-      return { ...state, isPaymentLoading: false, isPaymentSuccess: true, msg:payload };
+      return { ...state, isPaymentLoading: false, isPaymentSuccess: true,responseObj:{...payload} };
     case types.PAYMENT_FAILURE:
       return { ...state, isPaymentLoading: false, isPaymentError: true };
 

@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import styles from "./PaymentSuccess.module.css";
+import { useSelector } from "react-redux";
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const handleClick = () => {
@@ -17,7 +18,8 @@ const PaymentSuccess = () => {
   };
   const seachQuery = useSearchParams()[0];
 
-  const referenceNum = seachQuery.get("reference");
+  const { responseObj } = useSelector( (store) => store.PaymentReducer);
+  console.log(responseObj);
   return (
     <>
       
@@ -29,7 +31,7 @@ const PaymentSuccess = () => {
         <VStack h="100vh" justifyContent={"center"}>
           <Heading textTransform={"uppercase"}> Order Successfull</Heading>
 
-          <Text>Reference No.{referenceNum}</Text>
+          <Text>Reference No:-{responseObj?.razorpay_payment_id}</Text>
 
           <Button onClick={handleClick}>Shop More</Button>
         </VStack>
