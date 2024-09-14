@@ -167,7 +167,7 @@ const Login = () => {
               </Link>
             </Text>
           </Stack>
-          <SocialMedia />
+          {/* <SocialMedia /> */}
         </div>
       </SimpleGrid>
     </div>

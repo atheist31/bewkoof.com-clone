@@ -1,77 +1,66 @@
 import { Button } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link,useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import SingleCartItem from "../../Components/CartPageComponents/SingleCartItem";
 import {
   getFromCartFun,
-  getSingleProduct,
   deleteCartProduct,
   getTotalMrpPrice,
   getToatalDiscountPrice,
   getTotalCartProduct,
 } from "../../Redux/Cart/action";
 import styles from "./CartPage.module.css";
-import * as types from "../../Redux/Cart/actionType";
 import useCustomToast from "../../hooks/useCustomToast";
-import InitialLoader from "../../Layout/InitialLoader";
-import { getTokenFromCookies, isTokenExpired } from "../../utils/token.utils";
-import { clearCartProduct, paymentProcessAction } from "../../Redux/Payment/action.payment";
+import { paymentProcessAction} from "../../Redux/Payment/action.payment";
+import { EMPTY_CART_LOGO_URL } from "../../utils/constant";
 
 const CartPage = () => {
-  const showToast = useCustomToast();
-  const { cartData, isLoading, isError, msg,quantityLoading,deleteLoading, totalMrp,totalDiscount,totalCartProduct} = useSelector(
-    (store) => store.cartReducer
-  );
-
-  const {user}=useSelector((store)=>store.authReducer)
-  // console.log("user",user);
-
-  //console.log('cartData',cartData);
   const dispatch = useDispatch();
+  const showToast = useCustomToast();
+  const navigate = useNavigate();
+  const {
+    cartData,
+    isLoading,
+    quantityLoading,
+    deleteLoading,
+    totalMrp,
+    totalDiscount,
+    totalCartProduct,
+  } = useSelector((store) => store.cartReducer);
+
+  const { user } = useSelector((store) => store.authReducer);
+  const { isPaymentLoading } = useSelector(
+    (store) => store.PaymentReducer
+  );
+  console.log(isPaymentLoading, "isPaymentLoading");
+  console.log(user, "user");
+
   useEffect(() => {
     dispatch(getFromCartFun());
-    dispatch(getTotalMrpPrice())
-    dispatch(getToatalDiscountPrice())
-    dispatch(getTotalCartProduct())
-  }, [quantityLoading,deleteLoading]);
+    dispatch(getTotalMrpPrice());
+    dispatch(getToatalDiscountPrice());
+    dispatch(getTotalCartProduct());
+  }, [quantityLoading, deleteLoading, dispatch]);
 
   const handleRemoveCartData = (id) => {
     console.log("deleted");
-    dispatch(deleteCartProduct(id));
-
-    showToast("Removed from Cart", "error", 3000);
+    dispatch(deleteCartProduct(id)).then(() => {
+      showToast("Removed from Cart", "error", 3000);
+    });
   };
 
-  
-
-
-
-  const PaymentHandler = async (amount) => {
-    console.log("Payment handler stated");
-    dispatch(clearCartProduct())
-    try {
-      const paymentSuccess = await dispatch(paymentProcessAction(amount,user));
-      
-      console.log({paymentSuccess});
-      // If you need to do something after the payment process is successful, handle it here
-      // For example, you can navigate to a success page or show a success message.
-    } catch (error) {
-      console.error("Payment Error: ", error);
-      // Handle payment error here, show an error message or perform other actions.
-    }
-    
-}
-
+  const PaymentHandler = (amount) => {
+    dispatch(paymentProcessAction(amount, user, navigate));
+  };
 
   if (cartData.length === 0) {
     return (
       <div className={styles.emptyBag}>
         <div>
           <img
-            src="https://images.bewakoof.com/images/doodles/empty-cart-page-doodle.png"
-            alt="Sunil"
+            src={EMPTY_CART_LOGO_URL}
+            alt="EMPTY_CART_LOGO"
           />
         </div>
         <p>Bag is Empty</p>
@@ -90,7 +79,9 @@ const CartPage = () => {
         {totalCartProduct} items(s)
       </div>
       <div className={styles.cartpage_container}>
-      {(isLoading || deleteLoading) && <h1 className={styles.loader}>Loading...</h1>}
+        {(isLoading || deleteLoading) && (
+          <h1 className={styles.loader}>Loading...</h1>
+        )}
         <div className={styles.allcartproducts}>
           {cartData &&
             cartData.map((el) => {
@@ -129,11 +120,19 @@ const CartPage = () => {
             <div className={styles.total}>
               <div>
                 <p>Total</p>
-                <p>₹{totalMrp-totalDiscount}</p>
+                <p>₹{totalMrp - totalDiscount}</p>
               </div>
               <div>
-                <Link >
-                  <Button onClick={()=>PaymentHandler(totalMrp-totalDiscount)} className={styles.button} >CONTINUE</Button>
+                <Link>
+                  <Button
+                    colorScheme="twitter"
+                    isLoading={isPaymentLoading}
+                    loadingText={"Please wait..."}
+                    onClick={() => PaymentHandler(totalMrp - totalDiscount)}
+                    className={styles.button}
+                  >
+                    CONTINUE
+                  </Button>
                 </Link>
               </div>
             </div>

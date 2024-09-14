@@ -27,18 +27,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
   MenuDivider,
   Button,
 } from "@chakra-ui/react";
 
 const Navbar = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
-  const sidebarRef = useRef(null);
 
   const { totalCartProduct } = useSelector((store) => store.cartReducer);
   const { user } = useSelector((store) => store.authReducer);
