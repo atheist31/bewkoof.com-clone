@@ -52,8 +52,10 @@ const MenPage = () => {
             })}
           </div>
         ) : (
-          <div style={{ width: "100%" }}>
-            <InitialLoader />
+          <div className="product-list">
+            {[1,2,3,4,5,6,7,8].map(()=>{
+              return <Loader/>
+            })}
           </div>
         )}
       </div>
